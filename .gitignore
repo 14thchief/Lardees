@@ -1,2 +1,3 @@
 node_modules
 Db_config.js
+config/config.json
