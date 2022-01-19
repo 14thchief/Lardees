@@ -1,13 +1,17 @@
 /* Cart Routes */
 const router= require('express').Router();
-const db=  require('../controllers/cart');
+const {
+    getOrderId, 
+    getCart, 
+    addToCart
+}=  require('../controllers/cart');
 module.exports= router;
 
 //Get all cart items
-router.get('/:user_id',db.getOrderId, db.getCart) //expects parameter with user_id
+router.get('/:user_id',getOrderId, getCart) //expects parameter with user_id
 
 //Add item to cart
-router.post('/', db.createOrder, db.addToCart) //expects body with user_id, product_id, quantity
+router.post('/:user_id', getOrderId, addToCart) //expects params with user_id, and req body with product_id, quantity
 
 //!! SET-UP PUT/UPDATE ACTION !!
 

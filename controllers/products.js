@@ -1,4 +1,4 @@
-const configObj = require('../Db_config').configObj;
+const configObj = require('../config/Db_config').configObj;
 const Pool= require('pg').Pool;
 
 const pool= new Pool(configObj);
