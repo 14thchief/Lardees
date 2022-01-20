@@ -18,6 +18,7 @@ const signup= (req, res, next)=>{
     })
     .then(user=> next())
     .catch(error =>{
+        console.log(error.original)
     error.status= 400;
     error.message= "email already exists!"
     next(error)

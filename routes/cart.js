@@ -8,10 +8,10 @@ const {
 module.exports= router;
 
 //Get all cart items
-router.get('/:user_id',getOrderId, getCart) //expects parameter with user_id
+router.get('/', getCart) //expects parameter with user_id
 
 //Add item to cart
-router.post('/:user_id', getOrderId, addToCart) //expects params with user_id, and req body with product_id, quantity
+router.post('/add', getOrderId, addToCart) //expects params with user_id, and req body with product_id, quantity
 
 //!! SET-UP PUT/UPDATE ACTION !!
 
