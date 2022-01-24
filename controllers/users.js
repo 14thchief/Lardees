@@ -30,6 +30,7 @@ const signup= (req, res, next)=>{
 //log in handler
 //upon successful login and session start, passportJS will populate req.user with the user object from the database
 const signin= (req, res, next)=>{
+    //if(!req.user) return next({status: 401, message: "Invalid user"})
     const {id, email, full_name}= req.user;
     res.json({id, email, full_name})
 }
