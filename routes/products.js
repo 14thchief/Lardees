@@ -24,7 +24,7 @@ router.get('/', db.getAllProducts);
 router.get("/categories/:category", db.getProductsByCat);
 router.get('/:product_id', db.getProductsById);
 
-router.post('/', db.addProduct);
+router.post('/add', db.addProduct);
 
 router.put('/:product_id', db.updateProduct);
 

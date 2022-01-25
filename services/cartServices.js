@@ -16,10 +16,10 @@ const getUserPendingOrder= async (userID)=>{
             AND status= 'pending'
             `, [userID]
         )
-        return pendingOrder;
+        return pendingOrder? pendingOrder : false;
 
     }catch(err){
-        console.log(err)
+        console.log({status: "DB query error", message: "No result found"})
     }
     
 }
@@ -149,6 +149,7 @@ const removeAllCartItems= async (orderID)=>{
 
 
 module.exports= {
+    pool,
     getUserPendingOrder,
     createUserPendingOrder,
     getAllCartItems,

@@ -36,14 +36,15 @@ const getOrderId= async (req, res, next)=>{
 //Fetch and send user's cart_items
 const getCart= (req, res, next)=>{
     if (req.isAuthenticated()){
+
         return getUserPendingOrder(req.user.id).then(order=>{
-            if(order.rows.length){
+            if(order && order.rows.length){
                 const orderID= order.rows[0]["id"];
                 getAllCartItems(orderID).then(cart_items=>{
                     res.json(cart_items)
                 })
             }else{
-                res.json(order.rows)
+                res.send({message: "Please add to cart", error: true})
             }
             
         }).catch(error=> next(error))

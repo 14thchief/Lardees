@@ -2,7 +2,7 @@
 
 module.exports= {
     up: (queryInterface, Sequelize)=> {
-        return queryInterface.createTable('Products', {
+        return queryInterface.createTable('products', {
             id: {
                 allowNull: false,
                 primaryKey: true,
@@ -11,6 +11,7 @@ module.exports= {
             },
             name: {
                 allowNull: false,
+                unique: true,
                 type: Sequelize.STRING
             },
             price: {
@@ -19,10 +20,10 @@ module.exports= {
             },
             category: {
                 allowNull: false,
-                type: Sequelize.STRING
+                type: Sequelize.ARRAY(Sequelize.ENUM('combo','main', 'side', 'sauce', 'protein', 'soup', 'keto'))
             },
             description: {
-                allowNull: false,
+                allowNull: true,
                 type: Sequelize.STRING
             },
             createdAt: {

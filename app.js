@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use('/api', apiRouter);
 app.use('/', indexRouter);
 
-
+//Error handler
 app.use((err, req, res, next)=>{
     console.log(err)
     res.status(err.status || 401).send(err.message)

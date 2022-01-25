@@ -1,6 +1,6 @@
 const passport = require("passport");
 const bcrypt= require('bcrypt');
-const User= require('../models').User;
+const User= require('../models').user;
 
 require('../config/passport_config')(passport); //set up for passport library
 
@@ -10,20 +10,44 @@ const encryptPassword= (password)=>{
 
 //sign up handler
 const signup= (req, res, next)=>{
-    const newUser= User.create({
-        email: req.body.email,
-        password: encryptPassword(req.body.password),
-        full_name: req.body.name
-        //other details included later
-    })
-    .then(user=> next())
-    .catch(error =>{
-        console.log(error.original)
-    error.status= 400;
-    error.message= "email already exists!"
-    next(error)
-    })
-    
+    const {email, password, name}= req.body;
+    const {authkey}= req.headers;
+
+    const condition= authkey === process.env.ADMIN_KEY;
+
+    if (condition){
+       User.create({
+            email: email,
+            password: encryptPassword(password),
+            full_name: name,
+            is_admin: true
+            //other details included later
+        })
+        .then(user=> {
+            console.log(`New admin created: ${user.full_name}`)
+            return next()
+        })
+        .catch(error =>{
+            console.log(error.stack)
+            next({status: 400, message: "email already exists!"})
+        })
+    }
+    else{
+        console.log(req.headers);
+        User.create({
+            email: req.body.email,
+            password: encryptPassword(req.body.password),
+            full_name: req.body.name
+            //other details included later
+        })
+        .then(user=> next())
+        .catch(error =>{
+            console.log(error)
+        error.status= 400;
+        error.message= "email already exists!"
+        next(error)
+        })  
+    }
 }
 
 

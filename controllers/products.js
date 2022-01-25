@@ -1,28 +1,40 @@
-const configObj = require('../config/Db_config').configObj;
-const Pool= require('pg').Pool;
+const {pool}= require('../services/cartServices');
+const {
+    createProduct,
+    fetchAllProducts
+}= require('../services/productServices')
 
-const pool= new Pool(configObj);
 
 
+
+
+const addProduct= (req, res, next)=>{
+    const {name, description= "none available", category, price} = req.body;
+
+    if(!req.isAuthenticated()) return next({message: "Please login or signup to create product"})
+    if(!req.user.is_admin) return next({status: 403, message: "non-admin unauthorised to create product!"})
+
+    createProduct(name, category, price, description)
+    .then(product=>{
+        if (product.error) return next({message: product.error.message});
+
+        res.status(201).json(product);
+    })
+    .catch(error=> next({message: "Error creating new product"}))
+}
 
 const getAllProducts= (req, res, next)=>{
-    pool.query(
-        `
-        SELECT * FROM products
-        `, (error, results)=>{
-            if(error){
-                throw error
-            }
-            console.log(results.rows)
-            res.status(200).send(results.rows)
-        }
-    )
+    return fetchAllProducts()
+    .then(result=>{
+        res.status(200).json(result)
+    })
+    .catch(err=> next({status: 404, message: "error fetching products"}))
 }
 
 const getProductsByCat= (req, res, next)=>{
     const category= req.params.category;
 
-    pool.query(
+   /* pool.query(
         `
         SELECT * FROM products
         WHERE products.category = $1
@@ -32,12 +44,14 @@ const getProductsByCat= (req, res, next)=>{
             }
             res.status(200).send(results.rows)
         }
-    )
+    ) */
+
+
 }
 
 const getProductsById= (req, res, next)=>{
-    const id= parseInt(req.params.product_id);
-    pool.query(
+    const {id}= req.body;
+   /* pool.query(
         `
         SELECT * FROM products
         WHERE id = $1
@@ -48,33 +62,18 @@ const getProductsById= (req, res, next)=>{
             console.log(results.rows)
             res.status(200).send(results.rows)
         }
-    )
+    ) */
+
+
 }
 
-
-const addProduct= (req, res, next)=>{
-
-    const {name, description, category, price} = req.body;
-    pool.query(
-        `
-        INSERT INTO products(name, description, category, price)
-        VALUES ($1, $2, $3, $4)
-        `, [name, description, category, price], (error, results)=>{
-            if(error){
-                throw error
-            }
-            console.log(results.rows)
-            res.status(200).send(`New product added with id: ${results.insertId}`)
-        }
-    )
-}
 
 const updateProduct= (req, res, next)=>{
 
     const {name, description, category, price} = req.body;
     const id= req.params.product_id;
 
-    pool.query(
+    /* pool.query(
 
         `
         UPDATE products
@@ -87,13 +86,16 @@ const updateProduct= (req, res, next)=>{
             console.log(req.body)
             res.status(200).send(`Updated product with id: ${id}`)
         }
-    )
+    ) */
+
+
+
 }
 
 const deleteProduct= (req, res, next)=>{
     const id= req.params.product_id;
 
-    pool.query(
+    /*pool.query(
         `
         DELETE FROM products
         WHERE id = $1
@@ -104,7 +106,10 @@ const deleteProduct= (req, res, next)=>{
             console.log(results.rows)
             res.status(200).send(`product with id: ${id}`)
         }
-    )
+    ) */
+
+
+
 }
 
 module.exports= {
