@@ -1,31 +1,30 @@
 /* Product Routes */
 const router= require("express").Router();
-const db= require('../controllers/products');
+const {
+    getAllProducts,
+    getProductsByCat,
+    getProductById,
+    addProduct,
+    updateProduct,
+    deleteProduct
+}= require('../controllers/products');
 module.exports= router;
 
 
-
-/*router.param('category', (req, res, next)=>{
-    const category= req.params.category;
-    const products= productsDb.filter(product=> product.categories.includes(category))
-    req.products= products;
+router.use(['/add', '/update', '/delete'], (req, res, next)=>{
+    if(!req.isAuthenticated()) return next({message: "Please login or signup to create product"})
+    if(!req.user.is_admin) return next({status: 401, message: "non-admin unauthorised to create product!"})
     next()
 })
 
-router.param('product_id', (req, res, next)=>{
-    const id= req.params.product_id;
-    const product= productsDb.filter(product=> product.id == id)
-    next()
-})*/
+router.get('/', getAllProducts);
 
+router.get('/product', getProductById);
 
-router.get('/', db.getAllProducts);
+router.get("/cat/:category", getProductsByCat);
 
-router.get("/categories/:category", db.getProductsByCat);
-router.get('/:product_id', db.getProductsById);
+router.post('/add', addProduct);
 
-router.post('/add', db.addProduct);
+router.put('/update', updateProduct);
 
-router.put('/:product_id', db.updateProduct);
-
-router.delete('/:product_id', db.deleteProduct);
+router.delete('/delete', deleteProduct);
