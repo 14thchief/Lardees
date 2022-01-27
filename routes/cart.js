@@ -1,7 +1,7 @@
 /* Cart Routes */
 const router= require('express').Router();
 const {
-    getOrderId, 
+    setOrderId, 
     getCart, 
     addToCart,
     removeProductFromCart,
@@ -14,7 +14,7 @@ module.exports= router;
 router.get('/', getCart) //expects parameter with user_id
 
 //Add item to cart
-router.post('/add', getOrderId, addToCart) //expects params with user_id, and req body with product_id, quantity
+router.post('/add', setOrderId, addToCart) //expects params with user_id, and req body with product_id, quantity
 
 //Update item quantity in cart
 router.put('/update', updateProductInCart);

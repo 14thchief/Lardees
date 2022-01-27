@@ -9,28 +9,29 @@ const {
 } = require('../services/cartServices');
 
 //Middleware to get pending OR create new orderID (OrderID connects the cart to the user)
-const getOrderId= async (req, res, next)=>{
+const setOrderId= async (req, res, next)=>{
     if(req.isAuthenticated()){
         const userID= req.user.id;
-        console.log('User adding to cart: '+ req.user.full_name)
+        //console.log('User adding to cart: '+ req.user.full_name)
         try {
             const order = await getUserPendingOrder(userID);
             if (order.rows.length) {
                 req.orderID = order.rows[0]["id"];
-                console.log(`pending order ID found: ${req.orderID}`);
+                //console.log(`pending order ID found: ${req.orderID}`);
                 return next();
             }else {
                 createUserPendingOrder(userID).then(newOrder => {
                     req.orderID = newOrder.rows[0]["id"];
-                    console.log(`New created order ID: ${req.orderID}`);
+                    //console.log(`New created order ID: ${req.orderID}`);
                     return next();
                 });
             }
         } catch (error) {
             return next(error);
         }
+    }else{
+        next({status: 401, message: "please login or sign up"})
     }
-    next({status: 401, message: "Please login or sign up"})
 }
 
 //Fetch and send user's cart_items
@@ -41,10 +42,10 @@ const getCart= (req, res, next)=>{
             if(order && order.rows.length){
                 const orderID= order.rows[0]["id"];
                 getAllCartItems(orderID).then(cart_items=>{
-                    res.json(cart_items)
+                    res.status(200).json(cart_items)
                 })
             }else{
-                res.send({message: "Please add to cart", error: true})
+                res.send([])
             }
             
         }).catch(error=> next(error))
@@ -62,7 +63,7 @@ const addToCart= (req, res, next)=>{
         .then(result=>{
             if(result){
                 const addedProductID= result[0]["product_id"];
-                res.status(200).send(`Product ${addedProductID} added to cart successfully`)
+                res.status(200).send({status: "success", message: "product added to cart", payload: result[0]})
             }else{
                 res.status(400).send(`Product ${product_id} already exist in cart`)
             }
@@ -82,8 +83,8 @@ const removeProductFromCart= (req, res, next)=>{
             const order_id= orderID.rows[0]["id"];
             removeCartItem(order_id, product_id)
             .then(productID=>{
-                console.log(`Product ${productID.product_id} removed from cart!`);
-                res.status(200).send({response: "success"})
+                //console.log(`Product ${productID.product_id} removed from cart!`);
+                res.status(200).send({status: "success", message: "product removed from cart"})
             })
             .catch(error=> {
                 next({status: 404, message: "product not found in cart"})
@@ -103,8 +104,8 @@ const clearUserCart= (req, res, next)=>{
             const order_id= orderID.rows[0]["id"];
             removeAllCartItems(order_id)
             .then(orderID=>{
-                console.log(`${req.user.full_name}'s cart with order ID of ${orderID.id} has been reset!`);
-                res.status(200).send({response: "success"})
+                //console.log(`${req.user.full_name}'s cart with order ID of ${orderID.id} has been reset!`);
+                res.status(200).send({status: "success", message: "cart cleared"});
             })
             .catch(error=> {
                 next({status: 404, message: "Cart is already empty"})
@@ -137,7 +138,7 @@ const updateProductInCart= (req, res, next)=>{
 
 module.exports= {
     addToCart,
-    getOrderId,
+    setOrderId,
     getCart,
     removeProductFromCart,
     clearUserCart,

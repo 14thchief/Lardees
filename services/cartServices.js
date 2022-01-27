@@ -19,7 +19,7 @@ const getUserPendingOrder= async (userID)=>{
         return pendingOrder? pendingOrder : false;
 
     }catch(err){
-        console.log({status: "DB query error", message: "No result found"})
+        console.log({message: "No result found"})
     }
     
 }
@@ -33,12 +33,11 @@ const createUserPendingOrder= async (userID)=>{
                 VALUES ($1, 'pending')
                 RETURNING *
             `, [userID])
-        console.log({newOrder: createdOrder.rows});
+        //console.log({newOrder: createdOrder.rows});
         return createdOrder;
 
     }catch(error){
         console.log(error)
-        
     }
     
 }
@@ -86,7 +85,6 @@ const addProductToUserCart= async (orderID, productID, quantity)=> {
             RETURNING product_id
             `, [orderID, productID, quantity])
 
-        console.log(addedProduct);
         return addedProduct; //returns the product_id of product added to cart
 
     }catch(error){ console.log(error)}
